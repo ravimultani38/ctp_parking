@@ -48,7 +48,7 @@ const LocationPage = () => {
 
   // Initialize Socket.IO
   useEffect(() => {
-    const socket = io("http://localhost:3000"); // Backend Socket.IO server URL
+    const socket = io(); // Backend Socket.IO server URL
     socketRef.current = socket; // Assign socket to socketRef
 
     // Register the user ID to the socket
