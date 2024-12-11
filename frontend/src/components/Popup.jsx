@@ -5,7 +5,7 @@ const Popup = ({ coordinates, onClose ,location,fetchAvailableLocations}) => {
   const claimParking = async (locationId) => {
     try {
      
-      const response = await fetch("http://localhost:3000/locations/claim", {
+      const response = await fetch("/locations/claim/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
