@@ -11,25 +11,32 @@ const SettingsPage = () => {
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const response = await fetch("/user/info/", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          },
-        });
+   const fetchUserInfo = async () => {
+  try {
+    const response = await fetch("/user/info", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+      },
+    });
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch user info");
-        }
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(`Failed to fetch user info: ${text}`);
+    }
 
-        const data = await response.json();
-        setUsername(data.username);
-        setTokens(data.tokens);
-      } catch (error) {
-        setErrorMessage("Error fetching user info",error);
-      }
-    };
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      const data = await response.json();
+      setUsername(data.username);
+      setTokens(data.tokens);
+    } else {
+      throw new Error("Response is not JSON");
+    }
+  } catch (error) {
+    setErrorMessage(`Error fetching user info: ${error.message}`);
+  }
+};
+
 
     fetchUserInfo();
   }, []);
