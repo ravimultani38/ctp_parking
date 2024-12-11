@@ -19,7 +19,15 @@ const io = new Server(server, {
   },
 });
 
+if (process.env.NODE_ENV === 'production') {
+    const frontendPath = path.join(__dirname, '../frontend/dist');
+    app.use(express.static(frontendPath));
 
+    // All unknown routes should be handed to React app
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(frontendPath, 'index.html'));
+    });
+}
 const connectedUsers = {};
 
 // Socket.IO connection
