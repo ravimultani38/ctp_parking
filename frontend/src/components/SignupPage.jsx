@@ -19,7 +19,7 @@ const SignupPage = () => {
     setSuccess(null);
 
     try {
-      const response = await axios.post('http://localhost:3000/register', formData);
+      const response = await axios.post('/register/', formData);
       setSuccess(response.data.message);
       setFormData({ username: '', email: '', password: '' });
     } catch (err) {
