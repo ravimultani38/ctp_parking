@@ -13,7 +13,7 @@ const SettingsPage = () => {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const response = await fetch("http://localhost:3000/user/info", {
+        const response = await fetch("/user/info/", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           },
