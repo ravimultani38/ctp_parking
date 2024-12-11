@@ -1,0 +1,123 @@
+
+.navbar-container {
+    background-color: none;
+  }
+  
+  .navbar {
+    width: auto;
+    height: 64px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid #e2e8f0;
+    border-radius: 12px; 
+    border: none; 
+    background-color: #e0ded7;
+}
+  
+  .navbar-brand {
+    font-size: 24px;
+    font-weight: bold;
+    color: black;
+    text-decoration: none;
+    
+  }
+  .logo{
+    height: 210px;
+    width: 230px;
+  }
+  
+  .navbar-links {
+    display: flex;
+    gap: 16px;
+  }
+  
+  .navbar-link {
+    text-decoration: none;
+    color: black;
+    padding: 8px 16px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .navbar-link:hover {
+    background-color: black;
+    color: white;
+  }
+  
+  .navbar-link.sign-in {
+    background-color: #e2e8f0;
+    border: 1px solid #4a5568;
+  }
+  
+  .navbar-link.sign-in:hover {
+    background-color: #2d3748;
+    color: white;
+  }
+  
+  .navbar-link.register {
+    background-color: #2d3748;
+    color: white;
+    border: 1px solid #4a5568;
+  }
+  
+  .navbar-link.register:hover {
+    background-color: #e2e8f0;
+    color: black;
+  }
+  .logout{
+    background-color: white;
+  }
+  /* Mobile Navbar */
+  .navbar-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    background-color: #f7fafc;
+  }
+  
+  .mobile-link {
+    text-decoration: none;
+    color: black;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: #f7fafc;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .mobile-link:hover {
+    background-color: black;
+    color: white;
+  }
+  
+  /* Toggle Button */
+  .navbar-toggle {
+    display: flex;
+    align-items: center;
+  }
+  
+  .toggle-button {
+    background-color: transparent;
+    border: none;
+    color: black;
+    font-size: 24px;
+    cursor: pointer;
+  }
+  
+  .md-hidden {
+    display: none;
+  }
+  
+  @media (max-width: 768px) {
+    .navbar-links {
+      display: none;
+    }
+  
+    .md-hidden {
+      display: flex;
+    }
+  }
+  
