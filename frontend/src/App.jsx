@@ -195,7 +195,7 @@ const LocationPage = () => {
   };
   const offerParking = async () => {
     try {
-      const response = await fetch("http://localhost:3000/locations/offer", {
+      const response = await fetch("/locations/offer/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -224,7 +224,7 @@ const LocationPage = () => {
    
     try {
       
-      const response = await fetch("http://localhost:3000/locations/claim", {
+      const response = await fetch("/locations/claim/", {
         
         method: "POST",
         headers: {
@@ -252,7 +252,7 @@ const LocationPage = () => {
   const fetchAvailableLocations = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3000/locations/available",
+        "/locations/available/",
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
