@@ -15,7 +15,7 @@ const LoginPage = () => {
     setError(null);
 
     try {
-      const response = await axios.post('http://localhost:3000/login', { email, password });
+      const response = await axios.post('/login/', { email, password });
 
       if (response.data.token) {
         localStorage.setItem('authToken', response.data.token);
