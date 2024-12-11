@@ -8,7 +8,7 @@ const FetchUsername = ({ userId }) => {
   useEffect(() => {
     const fetchUsername = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/user/username/${userId}`, {
+        const response = await fetch(`/user/username/${userId}`, {
           headers: {
             "Authorization": `Bearer ${localStorage.getItem("authToken")}`, 
           },
