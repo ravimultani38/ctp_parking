@@ -80,8 +80,62 @@ const SettingsPage = () => {
   // Rest of the component remains the same...
   return (
     <div className="container">
-      {/* Your existing JSX */}
-      {errorMessage && <p className="error">{errorMessage}</p>}
+      <h1 className="title">Settings</h1>
+      {username && <h2 className="username">Welcome, {username}!</h2>}
+      
+      <div className="section">
+        <h2 className="subtitle">Total Tokens</h2>
+        <p className="tokens">{tokens}</p>
+      </div>
+      
+      <div className="section">
+        <h2 className="subtitle">Change Password</h2>
+        
+        <form onSubmit={handlePasswordChange}>
+          <div className="formGroup">
+            <label className="label">Old Password</label>
+            <input
+              type="password"
+              value={oldPassword}
+              onChange={(e) => setOldPassword(e.target.value)}
+              required
+              className="input"
+            />
+          </div>
+
+          <div className="formGroup">
+            <label className="label">New Password</label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              required
+              className="input"
+            />
+          </div>
+
+          <div className="formGroup">
+            <label className="label">Confirm Password</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              className="input"
+            />
+          </div>
+
+          <button type="submit" className="button">
+            Change Password
+          </button>
+        </form>
+
+        {successMessage && (
+          <p className="successMessage">{successMessage}</p>
+        )}
+
+        {errorMessage && <p className="errorMessage">{errorMessage}</p>}
+      </div>
     </div>
   );
 };
