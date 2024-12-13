@@ -18,7 +18,7 @@ const SettingsPage = () => {
 
       try {
         // Ensure full URL is used
-        const response = await fetch("http://localhost:3000/user/info", {
+        const response = await fetch("/user/info", {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem("authToken")}`,
