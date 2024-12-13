@@ -1,22 +1,39 @@
-import { useEffect, useState, useRef } from "react";
+import  { useEffect, useState, useRef } from "react";
+
+import { io } from "socket.io-client"; // Ensure this import exists at the top
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
 } from "react-router-dom";
-import { io } from "socket.io-client";
+import "ol/ol.css";
 import { Map, View } from "ol";
 import TileLayer from "ol/layer/Tile";
-import OSM from "ol/source/OSM";
+import OSM from "ol/source/OSM";2
 import { fromLonLat } from "ol/proj";
 import { Feature } from "ol";
 import Point from "ol/geom/Point";
 import { Style, Icon } from "ol/style";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
-import FetchUsername from "./components/FetchUsername";
+import SignupPage from "./components/SignupPage";
+import LoginPage from "./components/LoginPage";
+import { Navbar } from "./components/Navbar";
 import Popup from "./components/Popup";
+import SettingsPage from "./components/SettingsPage";
+import FetchUsername from "./components/FetchUsername";
+
+
+
+const ProtectedRoute = ({ children }) => {
+  const token = localStorage.getItem("authToken");
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+};
+
 
 const LocationPage = () => {
   const [currentLocation, setCurrentLocation] = useState(null);
