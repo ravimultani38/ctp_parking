@@ -77,7 +77,44 @@ const SettingsPage = () => {
     fetchUserInfo();
   }, []);
 
-  // Rest of the component remains the same...
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+
+    setSuccessMessage("");
+    setErrorMessage("");
+
+    if (newPassword !== confirmPassword) {
+      setErrorMessage("Passwords do not match");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        "http://localhost:3000/user/change-password",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+          body: JSON.stringify({ oldPassword, newPassword }),
+        }
+      );
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to change password");
+      }
+
+      setSuccessMessage("Password changed successfully");
+      setOldPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err) {
+      setErrorMessage(err.message);
+    }
+  };
+
   return (
     <div className="container">
       <h1 className="title">Settings</h1>
