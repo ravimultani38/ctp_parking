@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import './SettingsPage.css';  // Import the CSS file
+import './SettingsPage.css';
 
 const SettingsPage = () => {
   const [username, setUsername] = useState("");
@@ -9,46 +9,76 @@ const SettingsPage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-   const fetchUserInfo = async () => {
-  try {
-    const response = await fetch("/user/info", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-        'Cache-Control': 'no-cache', 
-        'Pragma': 'no-cache', 
-        'Expires': '0' 
-      },
-    });
+    const fetchUserInfo = async () => {
+      setIsLoading(true);
+      setErrorMessage("");
 
-    if (!response.ok) {
-      const text = await response.text();
-      throw new Error(`Failed to fetch user info: ${text}`);
-    }
+      try {
+        // Ensure full URL is used
+        const response = await fetch("http://localhost:3000/user/info", {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem("authToken")}`,
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
+        });
 
-    const contentType = response.headers.get("content-type");
-    if (contentType && contentType.includes("application/json")) {
-      const data = await response.json();
-      setUsername(data.username);
-      setTokens(data.tokens);
+        // Log full response for debugging
+        console.log('Response status:', response.status);
+        console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
+        if (!response.ok) {
+          // Try to parse error response
+          const errorText = await response.text();
+          throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+        }
+
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Response is not JSON');
+        }
+
+        const data = await response.json();
+        
+        // Validate data structure
+        if (!data.username || data.tokens === undefined) {
+          throw new Error('Invalid user data received');
+        }
+
+        setUsername(data.username);
+        setTokens(data.tokens);
+      } catch (error) {
+        console.error('Fetch user info error:', error);
+        setErrorMessage(`Error fetching user info: ${error.message}`);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    // Check for auth token before fetching
+    const authToken = localStorage.getItem("authToken");
+    if (authToken) {
+      fetchUserInfo();
     } else {
-      throw new Error("Response is not JSON");
+      setErrorMessage("No authentication token found. Please log in again.");
     }
-  } catch (error) {
-    setErrorMessage(`Error fetching user info: ${error.message}`);
-  }
-};
-
-
-    fetchUserInfo();
   }, []);
 
   const handlePasswordChange = async (e) => {
     e.preventDefault();
-
     setSuccessMessage("");
     setErrorMessage("");
+
+    // Enhanced password validation
+    if (newPassword.length < 8) {
+      setErrorMessage("Password must be at least 8 characters long");
+      return;
+    }
 
     if (newPassword !== confirmPassword) {
       setErrorMessage("Passwords do not match");
@@ -56,28 +86,31 @@ const SettingsPage = () => {
     }
 
     try {
-      const response = await fetch(
-        "http://localhost:3000/user/change-password",
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          },
-          body: JSON.stringify({ oldPassword, newPassword }),
-        }
-      );
+      const response = await fetch("http://localhost:3000/user/change-password", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
+        },
+        body: JSON.stringify({ 
+          oldPassword, 
+          newPassword 
+        }),
+      });
 
+      // Improved error handling
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "Failed to change password");
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to change password");
       }
 
       setSuccessMessage("Password changed successfully");
+      // Reset password fields
       setOldPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch (err) {
+      console.error('Password change error:', err);
       setErrorMessage(err.message);
     }
   };
@@ -85,6 +118,9 @@ const SettingsPage = () => {
   return (
     <div className="container">
       <h1 className="title">Settings</h1>
+      
+      {isLoading && <p className="loading">Loading user information...</p>}
+      
       {username && <h2 className="username">Welcome, {username}!</h2>}
       
       <div className="section">
@@ -104,6 +140,7 @@ const SettingsPage = () => {
               onChange={(e) => setOldPassword(e.target.value)}
               required
               className="input"
+              disabled={isLoading}
             />
           </div>
 
@@ -115,6 +152,8 @@ const SettingsPage = () => {
               onChange={(e) => setNewPassword(e.target.value)}
               required
               className="input"
+              disabled={isLoading}
+              minLength={8}
             />
           </div>
 
@@ -126,11 +165,17 @@ const SettingsPage = () => {
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
               className="input"
+              disabled={isLoading}
+              minLength={8}
             />
           </div>
 
-          <button type="submit" className="button">
-            Change Password
+          <button 
+            type="submit" 
+            className="button"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Processing...' : 'Change Password'}
           </button>
         </form>
 
