@@ -1,4 +1,10 @@
 import { useEffect, useState, useRef } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { io } from "socket.io-client";
 import { Map, View } from "ol";
 import TileLayer from "ol/layer/Tile";
