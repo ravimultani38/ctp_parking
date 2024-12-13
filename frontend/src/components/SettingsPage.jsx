@@ -32,9 +32,7 @@ const SettingsPage = () => {
           }
         });
 
-        // Log full response details for debugging
-        console.log('Response status:', response.status);
-        console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+    
 
         // Check if response is ok
         if (!response.ok) {
@@ -49,14 +47,14 @@ const SettingsPage = () => {
         if (!contentType || !contentType.includes('application/json')) {
           // Try to parse as text to see what's actually being returned
           const text = await response.text();
-          console.error('Non-JSON response:', text);
+          
           throw new Error(`Expected JSON, got ${contentType}`);
         }
 
         // Parse JSON
         const data = await response.json();
         
-        console.log('Parsed user data:', data);
+       
 
         // Validate data structure
         if (!data.username || data.tokens === undefined) {
@@ -67,7 +65,7 @@ const SettingsPage = () => {
         setTokens(data.tokens);
 
       } catch (error) {
-        console.error('Detailed fetch user info error:', error);
+        
         setErrorMessage(`Error fetching user info: ${error.message}`);
       } finally {
         setIsLoading(false);
