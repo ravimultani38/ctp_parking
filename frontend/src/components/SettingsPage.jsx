@@ -16,6 +16,9 @@ const SettingsPage = () => {
     const response = await fetch("/user/info", {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+        'Cache-Control': 'no-cache', 
+        'Pragma': 'no-cache', 
+        'Expires': '0' 
       },
     });
 
