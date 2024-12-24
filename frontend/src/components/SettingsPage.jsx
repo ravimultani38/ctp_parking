@@ -32,15 +32,18 @@ const SettingsPage = () => {
         });
 
         const data = response.data;
+        console.log("API Response Data:", data); // Log response data for debugging
 
-        if (!data.username || data.tokens === undefined) {
-          throw new Error('Invalid user data structure');
-        }
+        // TEMPORARILY DISABLE VALIDATION FOR DEBUGGING
+        // if (!data.username || data.tokens === undefined) {
+        //   throw new Error('Invalid user data structure');
+        // }
 
-        setUsername(data.username);
-        setTokens(data.tokens);
+        setUsername(data.username || ""); // Default to empty string if undefined
+        setTokens(data.tokens || 0);     // Default to 0 if undefined
 
       } catch (error) {
+        console.error("Fetch User Info Error:", error); // Log full error for debugging
         setErrorMessage(`Error fetching user info: ${error.response?.data?.message || error.message}`);
       } finally {
         setIsLoading(false);
