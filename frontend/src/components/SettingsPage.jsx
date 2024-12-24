@@ -22,7 +22,7 @@ const SettingsPage = () => {
           throw new Error("No authentication token found");
         }
 
-        const response = await fetch("http://localhost:3000/user/info", {
+        const response = await fetch("/user/info", {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${authToken}`,
@@ -88,7 +88,7 @@ const SettingsPage = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:3000/user/change-password",
+        "/user/change-password",
         {
           method: "PUT",
           headers: {
