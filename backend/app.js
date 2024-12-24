@@ -314,29 +314,33 @@ app.get("/user/tokens", authenticateJWT, async (req, res) => {
   });
   
   // GET: User Info
-  app.get("/user/info", authenticateJWT, async (req, res) => {
+ app.get("/user/info", authenticateJWT, async (req, res) => {
     try {
         const user = await User.findById(req.user.id, "username tokens");
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
-        res.status(200).json(user); // Correct JSON response
+        res.status(200).json(user);
     } catch (err) {
-        console.error("Error in /user/info:", err); // Important: Log errors
-        res.status(500).json({ error: "Server error", message: err.message }); // Send error details
+        console.error("Error in /user/info:", err);
+        res.status(500).json({ error: "Server error", message: err.message });
     }
 });
 
-// Serve frontend in production - ONLY AFTER OTHER ROUTES
+// ... other API routes ...
+
+// Static files and Catch-all route for the frontend - MUST BE DEFINED LAST AND CONDITIONALLY
 if (process.env.NODE_ENV === "production") {
     const frontendPath = path.join(__dirname, "../frontend/dist");
     app.use(express.static(frontendPath));
 
-    // Catch-all route for frontend - ONLY if not an API request
-    app.get(/^\/(?!api\/).*$/, (req, res) => { // Use regex to exclude /api
-      res.sendFile(path.join(frontendPath, "index.html"));
+    // The MOST IMPORTANT part: Precise regex and LAST position
+    app.get(/^(?!\/api\/|\/user\/info$).*$/, (req, res) => {
+        res.sendFile(path.join(frontendPath, "index.html"));
     });
 }
+
+// Start the server
 server.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
+    console.log(`Server running on http://localhost:${port}`);
 });
