@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import './SettingsPage.css';
 
 const SettingsPage = () => {
@@ -22,41 +23,16 @@ const SettingsPage = () => {
           throw new Error("No authentication token found");
         }
 
-        const response = await fetch("/user/info", {
-          method: 'GET',
+        const response = await axios.get("/user/info", {
           headers: {
-            'Authorization': `Bearer ${authToken}`,
-            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authToken}`,
             'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
             'Pragma': 'no-cache'
           }
         });
 
-    
+        const data = response.data;
 
-        // Check if response is ok
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
-        }
-
-        // Detailed content type checking
-        const contentType = response.headers.get('content-type');
-        console.log('Content Type:', contentType);
-
-        if (!contentType || !contentType.includes('application/json')) {
-          // Try to parse as text to see what's actually being returned
-          const text = await response.text();
-          
-          throw new Error(`Expected JSON, got ${contentType}`);
-        }
-
-        // Parse JSON
-        const data = await response.json();
-        
-       
-
-        // Validate data structure
         if (!data.username || data.tokens === undefined) {
           throw new Error('Invalid user data structure');
         }
@@ -65,8 +41,7 @@ const SettingsPage = () => {
         setTokens(data.tokens);
 
       } catch (error) {
-        
-        setErrorMessage(`Error fetching user info: ${error.message}`);
+        setErrorMessage(`Error fetching user info: ${error.response?.data?.message || error.message}`);
       } finally {
         setIsLoading(false);
       }
@@ -87,29 +62,24 @@ const SettingsPage = () => {
     }
 
     try {
-      const response = await fetch(
+      const authToken = localStorage.getItem("authToken");
+      const response = await axios.put(
         "/user/change-password",
+        { oldPassword, newPassword },
         {
-          method: "PUT",
           headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          },
-          body: JSON.stringify({ oldPassword, newPassword }),
+            Authorization: `Bearer ${authToken}`,
+            'Content-Type': 'application/json'
+          }
         }
       );
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "Failed to change password");
-      }
 
       setSuccessMessage("Password changed successfully");
       setOldPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch (err) {
-      setErrorMessage(err.message);
+      setErrorMessage(err.response?.data?.message || err.message);
     }
   };
 
