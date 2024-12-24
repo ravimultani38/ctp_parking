@@ -23,21 +23,22 @@ const SettingsPage = () => {
           throw new Error("No authentication token found");
         }
 
-        const response = await axios.get("/user/info", {
+        
+        const response = await axios.get(`/user/info`, {
           headers: {
             Authorization: `Bearer ${authToken}`,
             'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
-            'Pragma': 'no-cache'
+            'Pragma': 'no-cache',
+            'Content-Type': 'application/json'
           }
         });
 
         const data = response.data;
         console.log("API Response Data:", data); // Log response data for debugging
 
-        // TEMPORARILY DISABLE VALIDATION FOR DEBUGGING
-        // if (!data.username || data.tokens === undefined) {
-        //   throw new Error('Invalid user data structure');
-        // }
+        if (!data || typeof data !== 'object') {
+          throw new Error('Invalid JSON response');
+        }
 
         setUsername(data.username || ""); // Default to empty string if undefined
         setTokens(data.tokens || 0);     // Default to 0 if undefined
@@ -66,8 +67,9 @@ const SettingsPage = () => {
 
     try {
       const authToken = localStorage.getItem("authToken");
+      
       const response = await axios.put(
-        "/user/change-password",
+        `/user/change-password`,
         { oldPassword, newPassword },
         {
           headers: {
