@@ -19,15 +19,7 @@ const io = new Server(server, {
   },
 });
 
-if (process.env.NODE_ENV === 'production') {
-    const frontendPath = path.join(__dirname, '../frontend/dist');
-    app.use(express.static(frontendPath));
 
-    // All unknown routes should be handed to React app
-    app.get('*', (req, res) => {
-        res.sendFile(path.join(frontendPath, 'index.html'));
-    });
-}
 const connectedUsers = {};
 
 // Socket.IO connection
@@ -323,18 +315,28 @@ app.get("/user/tokens", authenticateJWT, async (req, res) => {
   
   // GET: User Info
   app.get("/user/info", authenticateJWT, async (req, res) => {
-    try {
-      const user = await User.findById(req.user.id, "username tokens");
-      if (!user) {
-        return res.status(404).json({ error: "User not found" });
-      }
-      res.status(200).json(user);
-    } catch (err) {
-      res.status(500).json({ error: "Server error" });
-    }
-  });
+    try {
+        const user = await User.findById(req.user.id, "username tokens");
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        res.status(200).json(user); // Correct JSON response
+    } catch (err) {
+        console.error("Error in /user/info:", err); // Important: Log errors
+        res.status(500).json({ error: "Server error", message: err.message }); // Send error details
+    }
+});
 
-// Start the server
+// Serve frontend in production - ONLY AFTER OTHER ROUTES
+if (process.env.NODE_ENV === "production") {
+    const frontendPath = path.join(__dirname, "../frontend/dist");
+    app.use(express.static(frontendPath));
+
+    // Catch-all route for frontend - ONLY if not an API request
+    app.get(/^\/(?!api\/).*$/, (req, res) => { // Use regex to exclude /api
+      res.sendFile(path.join(frontendPath, "index.html"));
+    });
+}
 server.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
